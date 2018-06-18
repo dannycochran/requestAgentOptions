@@ -1,6 +1,6 @@
 const express = require('express');
 const request = require('request');
-
+const http = require('http');
 const server = express();
 
 /**
@@ -8,7 +8,10 @@ const server = express();
  */
 const generateServerIdentityCheck = (backendServiceName) => {
   return (host) => {
-    console.log(host, backendServiceName);
+    // Check that the host matches the expected backendServiceName.
+    // When using AgentOptions with simultaneous requests that have different
+    // agentOptions,, this condition is false so we throw an error. If we use
+    // new http.Agent, the error goes away.
     if (host !== backendServiceName) {
       throw 'Invalid server certificate presented for ' + host;
     }
@@ -16,16 +19,22 @@ const generateServerIdentityCheck = (backendServiceName) => {
   };
 };
 
-const createCertOptions = (backendServiceName) => ({
+const createAgentOptions = (backendServiceName) => ({
   checkServerIdentity: generateServerIdentityCheck(backendServiceName)
 });
 
+/**
+ * To see the request succeed, use "agent" instead of "agentOptions".
+ */
 const getPosts = () => {
   return new Promise(resolve => {
+    const agentOptions = createAgentOptions('jsonplaceholder.typicode.com');
+    const agent = new http.Agent(agentOptions);
     const requestOptions = {
       method: 'GET',
-      agentOptions: createCertOptions('jsonplaceholder.typicode.com'),
-      url: 'https://jsonplaceholder.typicode.com/posts',
+      agent,
+      // agentOptions,
+      url: 'http://jsonplaceholder.typicode.com/posts',
       headers: {
         Accept: 'application/json',
       }
@@ -36,12 +45,18 @@ const getPosts = () => {
   });
 };
 
+/**
+ * To see the request succeed, use "agent" instead of "agentOptions".
+ */
 const getUsers = () => {
   return new Promise(resolve => {
+    const agentOptions = createAgentOptions('reqres.in');
+    const agent = new http.Agent(createAgentOptions(agentOptions));
     const requestOptions = {
       method: 'GET',
-      agentOptions: createCertOptions('reqres.in'),
-      url: 'https://reqres.in/api/users',
+      agent,
+      // agentOptions,
+      url: 'http://reqres.in/api/users',
       headers: {
         Accept: 'application/json',
       }
@@ -61,7 +76,7 @@ server.get('/', async (req, res, next) => {
   }
 });
 
-const http = server.listen(3000, () => {
-  const { address, port } = http.address();
-  console.log(`Server is up and running on: http://${address}:${port}`);
+const port = 3000;
+server.listen(port, () => {
+  console.log(`Server is up and running on: http://localhost:${port}`);
 });
