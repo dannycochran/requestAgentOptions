@@ -1,6 +1,5 @@
 const express = require('express');
 const request = require('request');
-const http = require('http');
 const server = express();
 
 /**
@@ -12,6 +11,7 @@ const generateServerIdentityCheck = (backendServiceName) => {
     // When using AgentOptions with simultaneous requests that have different
     // agentOptions,, this condition is false so we throw an error. If we use
     // new http.Agent, the error goes away.
+    console.log(host, backendServiceName);
     if (host !== backendServiceName) {
       throw 'Invalid server certificate presented for ' + host;
     }
@@ -29,12 +29,11 @@ const createAgentOptions = (backendServiceName) => ({
 const getPosts = () => {
   return new Promise(resolve => {
     const agentOptions = createAgentOptions('jsonplaceholder.typicode.com');
-    const agent = new http.Agent(agentOptions);
     const requestOptions = {
       method: 'GET',
-      agent,
-      // agentOptions,
-      url: 'http://jsonplaceholder.typicode.com/posts',
+      // agent,
+      ...agentOptions,
+      url: 'https://jsonplaceholder.typicode.com/posts',
       headers: {
         Accept: 'application/json',
       }
@@ -51,12 +50,10 @@ const getPosts = () => {
 const getUsers = () => {
   return new Promise(resolve => {
     const agentOptions = createAgentOptions('reqres.in');
-    const agent = new http.Agent(createAgentOptions(agentOptions));
     const requestOptions = {
       method: 'GET',
-      agent,
-      // agentOptions,
-      url: 'http://reqres.in/api/users',
+      ...agentOptions,
+      url: 'https://reqres.in/api/users',
       headers: {
         Accept: 'application/json',
       }
