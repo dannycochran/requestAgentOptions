@@ -24,15 +24,14 @@ const createAgentOptions = (backendServiceName) => ({
 });
 
 /**
- * To see the request succeed, use "agent" instead of "agentOptions".
+ * To see the request succeed, splat agentOptions instead of passing it in directly.
  */
 const getPosts = () => {
   return new Promise(resolve => {
     const agentOptions = createAgentOptions('jsonplaceholder.typicode.com');
     const requestOptions = {
       method: 'GET',
-      // agent,
-      ...agentOptions,
+      agentOptions,
       url: 'https://jsonplaceholder.typicode.com/posts',
       headers: {
         Accept: 'application/json',
@@ -45,14 +44,14 @@ const getPosts = () => {
 };
 
 /**
- * To see the request succeed, use "agent" instead of "agentOptions".
+ * To see the request succeed, splat agentOptions instead of passing it in directly.
  */
 const getUsers = () => {
   return new Promise(resolve => {
     const agentOptions = createAgentOptions('reqres.in');
     const requestOptions = {
       method: 'GET',
-      ...agentOptions,
+      agentOptions,
       url: 'https://reqres.in/api/users',
       headers: {
         Accept: 'application/json',
