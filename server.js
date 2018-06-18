@@ -13,7 +13,7 @@ const generateServerIdentityCheck = (backendServiceName) => {
     // new http.Agent, the error goes away.
     console.log(host, backendServiceName);
     if (host !== backendServiceName) {
-      throw 'Invalid server certificate presented for ' + host;
+      throw new Error('Invalid server certificate presented for ' + host);
     }
     return undefined;
   };
@@ -68,7 +68,7 @@ server.get('/', async (req, res, next) => {
     const [posts, users] = await Promise.all([getPosts(), getUsers()]);
     res.json({ posts, users });
   } catch (err) {
-    console.log(err.message);
+    res.send(err.message);
   }
 });
 
