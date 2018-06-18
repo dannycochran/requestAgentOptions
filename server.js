@@ -9,8 +9,8 @@ const generateServerIdentityCheck = (backendServiceName) => {
   return (host) => {
     // Check that the host matches the expected backendServiceName.
     // When using AgentOptions with simultaneous requests that have different
-    // agentOptions,, this condition is false so we throw an error. If we use
-    // new http.Agent, the error goes away.
+    // agentOptions,, this condition is false so we throw an error. If we spread
+    // the agentOptions, the error goes away.
     console.log(host, backendServiceName);
     if (host !== backendServiceName) {
       throw new Error('Invalid server certificate presented for ' + host);
